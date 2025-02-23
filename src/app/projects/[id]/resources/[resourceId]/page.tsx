@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProject } from "@/server/actions/projects";
-import { getResource, TemplateObject } from "@/server/actions/resources";
+import { getResource} from "@/server/actions/resources";
 import { DeleteResourceButton } from "@/app/resources/DeleteResourceButton";
 import { GenerateDataSection } from "./GenerateDataSection";
-import { EditableTemplate } from "@/app/components/EditableTemplate";
 import { IdTypeToggle } from "@/app/components/IdTypeToggle";
 import { ApiEndpointsSection } from "@/app/components/ApiEndpointsSection";
 import { EndpointTemplateEditor } from "@/app/components/EndpointTemplateEditor";
+import { CodeGenerator } from "@/components/resource/CodeGenerator";
+import { ResourceTemplateWrapper } from "@/components/resource/ResourceTemplateWrapper";
 
 const ROOT_URL = process.env.ROOT_SITE;
 
@@ -86,11 +87,9 @@ export default async function ResourcePage({ params }: PageProps) {
           />
           <div className="mt-6 bg-gray-800 shadow-xl sm:rounded-lg border border-gray-700">
             <div className="px-4 py-5 sm:p-6">
-              <EditableTemplate
-                template={resource.template as TemplateObject}
+              <ResourceTemplateWrapper
                 resourceId={resource.id}
-                currentCount={currentCount}
-                _projectId={project.id}
+                template={resource.template as Record<string, unknown>}
               />
             </div>
           </div>
@@ -99,6 +98,19 @@ export default async function ResourcePage({ params }: PageProps) {
             initialTemplate={
               resource.endpointTemplate as Record<string, unknown>
             }
+          />
+        </div>
+
+        {/* API Code Generator */}
+        <div className="bg-gray-800 rounded-lg p-6 mt-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-100">
+            API Code Generator
+          </h2>
+          <CodeGenerator
+            projectName={project.name}
+            resourceName={resource.name}
+            version={resource.endpoint.split('/')[0]}
+            template={resource.template as Record<string, unknown>}
           />
         </div>
       </div>
